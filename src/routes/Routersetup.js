@@ -9,6 +9,7 @@ import Projectdetails from '../pages/Projectdetails';
 import Register from '../pages/Register';
 import ProtectedRoute from "./ProtectedRoute";
 import AddProject from '../pages/AddProject';
+import AddTask from '../pages/AddTask';
 
 const Routersetup = () => {
     
@@ -26,7 +27,9 @@ const Routersetup = () => {
                             <Route path="add" element={<AddProject />} />
                         </Route>                        
                         <Route path="project-detail/:slug" element={<Projectdetails />} />
-                        <Route path="tasks" element={<Tasks />} />
+                        <Route path="tasks" element={<Tasks />} >
+                            <Route path="add" element={<AddTask />} />
+                        </Route>
                         <Route path="updates" element={<Updates />} />                  
                     </Route>
                 </Route>                

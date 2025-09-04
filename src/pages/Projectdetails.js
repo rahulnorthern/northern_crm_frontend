@@ -2,6 +2,7 @@ import React from 'react'
 import Tabbar from '../components/Tabbar';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Form from 'react-bootstrap/Form';
+import { Link } from 'react-router-dom';
 
 const Projectdetails = () => {
   return (
@@ -23,7 +24,7 @@ const Projectdetails = () => {
           <div className='tab-btn-end'>
             <button className='grey-btn-md'>Suspended</button>
             <button className='primary-btn-md'>Closed</button>
-            <button className='blue-btn-md'>New Task</button>
+            <Link className="blue-btn-md text-decoration-none text-center" to="/tasks/add">New Task</Link>
           </div>
         </div>
         <div className='pt-12'>

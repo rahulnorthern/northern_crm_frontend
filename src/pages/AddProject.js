@@ -1,19 +1,44 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form, InputGroup } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Swal from "sweetalert2";
+import { getUsersApi } from '../services/userService';
+import Select from "react-select";
+import { createProjectApi } from '../services/projectService';
 
 const initialState = {
     title: "",
     description: "",
-    deadline: ""
+    deadline: "",
+    members: []
 }
 
 const AddProject = () => {
     const [formData, setFormData] = useState(initialState);
     const [validated, setValidated] = useState(false);
     const today = new Date().toISOString().split("T")[0];
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [options, setOptions] = useState([]);
+
+    useEffect(() => {
+      const getUserList = async () => {
+        await getUsersApi()
+          .then((res) => {
+            console.log(res);
+            const userOptions = res.map((user) => ({
+              value: user.id,
+              label: `${user.id} - ${user.display_name} (${user.username})`,
+            }));
+            setOptions(userOptions);
+          })
+          .catch((err) => {
+            console.log(err);
+            alert(err.response?.data?.message || "Failed to fetch users! Please try again.");
+          });
+      };
+      getUserList();
+    }, []);
 
     const updateFormData = (e) => {
         setFormData({
@@ -26,7 +51,8 @@ const AddProject = () => {
         e.preventDefault();
         setValidated(true);   
         console.log(formData)
-        if(formData.title && formData.description && formData.deadline) {
+        console.log(selectedOptions);
+        if(formData.title && formData.description && formData.deadline && selectedOptions.length) {
             console.log(new Date(formData.deadline).toISOString().split("T")[0], new Date().toISOString().split("T")[0])
           if(new Date(formData.deadline).toISOString().split("T")[0] < new Date().toISOString().split("T")[0]){
             Swal.fire({
@@ -37,13 +63,23 @@ const AddProject = () => {
             });
             return;
           }
-          try {
-            
-          } catch (err) {
-            console.error("Login failed:", err);
-          } finally {
-            
+          const postData = {
+              name: formData.title,
+              description: formData.description,
+              deadline: formData.deadline,
+              members: selectedOptions.map(op=> op.value)
           }
+          console.log(postData);
+          createProjectApi(postData)
+          .then((res) => {
+              console.log(res);                
+              setFormData(initialState);
+              setValidated(false);
+          })
+          .catch((err) => {
+              console.log(err);
+              alert(err.response?.data?.message || "Registration failed! Please try again.");
+          });
         }
     }
 
@@ -86,7 +122,17 @@ const AddProject = () => {
                       {validated && !formData.deadline && (
                         <p className="text-danger">Select Deadline!!</p>
                       )}
-                    </Form.Group>        
+                    </Form.Group> 
+                    <div className="mb-3">
+                      <Form.Label>Members*</Form.Label>
+                      <Select
+                        isMulti
+                        options={options}
+                        value={selectedOptions}
+                        onChange={setSelectedOptions}
+                        placeholder="Select users..."
+                      />
+                    </div>       
                     <button className='primary-btn p-2' onClick={submitForm}>Submit</button>  
                 </Form>
               </Card.Body>

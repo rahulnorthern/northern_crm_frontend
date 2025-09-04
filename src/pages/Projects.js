@@ -1,25 +1,34 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Tabbar from '../components/Tabbar';
 import Datatablecomponent from '../components/Datatablecomponent';
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProjects } from "../store/thunks/projectthunk";
 
 const ComponentTable = Datatablecomponent(null);
 
 const Projects = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const isAddPage = location.pathname.includes("/projects/add");
+  const { list, loading, error } = useSelector((state) => state.project);
+  const [data, setData] = useState([]);
 
   const columns = [
     { name: 'ID', selector: row => row.id, sortable: true },
-    { name: 'Name', selector: row => row.name, sortable: true },
-    { name: 'Status', selector: row => row.status, sortable: true }
+    { name: 'Name', cell: row => (
+        <p><Link to={`/project-detail/${row.id}`} className={`text-decoration-none tablinks w-100`}>{row.name}</Link></p>
+      ), sortable: true },
+    { name: 'Status', selector: row => row.status?row.status.charAt(0).toUpperCase() + row.status.slice(1):"", sortable: true }
   ];
 
-  const data = [
-    { id: 1, name: 'Project Name', status: 'In progress' },
-    { id: 2, name: 'Project Name1', status: 'In progress' },
-    { id: 3, name: 'Project Name', status: 'In progress' }
-  ];
+  useEffect(() => {
+    dispatch(fetchProjects());
+  }, [dispatch]);  
+
+  useEffect(() => {
+    setData(list.projects);
+  }, [list]);  
 
   return (
     <>
