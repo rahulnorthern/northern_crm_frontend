@@ -12,14 +12,16 @@ const Main = () => {
   return (
     <>
       {loading && <Loader />}
-      <Navbar />
-      <div className='main-container'>
-         <div className='main-body'>
-           <Outlet />
-           <Info />
-         </div>
-      </div>        
-      <Footer />
+      <div className="app-container">
+        <Navbar />
+        <div className='main-container'>
+           <div className='main-body'>
+             <Outlet />
+             <Info />
+           </div>
+        </div>        
+        <Footer />
+      </div>      
     </>    
   )
 }

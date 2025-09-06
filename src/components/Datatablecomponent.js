@@ -12,12 +12,18 @@ const Datatablecomponent = (WrappedComponent) => {
       }
     };
 
+    const mergedStyles = {
+      ...defaultStyles,
+      ...props.customStyles,
+    };
+
+
     return (
       <DataTable
         pagination
         highlightOnHover
         striped
-        customStyles={defaultStyles}
+        customStyles={mergedStyles}
         {...props}
       />
     );

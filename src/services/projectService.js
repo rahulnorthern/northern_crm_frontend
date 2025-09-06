@@ -11,3 +11,9 @@ export const getProjectsApi = async () => {
   const res = await apiClient.get("/api/project/get");
   return res.data;
 };
+
+// Get Projects by ID
+export const getProjectApi = async (id) => {
+  const res = await apiClient.get(`/api/project/${id}`);
+  return res.data;
+};

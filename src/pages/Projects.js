@@ -11,15 +11,75 @@ const Projects = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isAddPage = location.pathname.includes("/projects/add");
-  const { list, loading, error } = useSelector((state) => state.project);
+  const { list } = useSelector((state) => state.project);
   const [data, setData] = useState([]);
 
+  const customTableStyles = {
+    table: {
+      style: {
+        border: "1px solid #f2f5f7",
+        borderRadius: "0rem",
+        color: "#181818",          
+        overflow: "hidden",
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: "#FFFFFF",          
+        fontWeight: "700",
+        fontSize: "14px",
+        borderBottom: "1px solid #f2f5f7",
+        minHeight: "52px",
+      },
+    },
+    headCells: {
+      style: {
+        borderRight: "1px solid #f2f5f7",
+        fontWeight: "600",
+        color: "#000000",
+        "&:last-child": {
+          borderRight: "none",
+        },
+      },
+    },
+    rows: {
+      style: {
+        cursor: "pointer",
+        borderBottom: "1px solid #f2f5f7",
+        fontWeight: "400",
+        fontSize: "12px",
+        transition: "background-color 0.2s ease",
+        "&:last-child": {
+          borderBottom: "none",
+        },        
+      },
+      denseStyle: {
+        minHeight: "32px",
+      },
+    },
+    cells: {
+      style: {
+        fontSize: "16px",
+        borderRight: "1px solid #f2f5f7",        
+        "&:last-child": {
+          borderRight: "none",
+        },
+      },
+    },
+    pagination: {
+      style: {
+        borderTop: "none",
+        marginTop: "0px",
+      },
+    },
+  }
+
   const columns = [
-    { name: 'ID', selector: row => row.id, sortable: true },
-    { name: 'Name', cell: row => (
-        <p><Link to={`/project-detail/${row.id}`} className={`text-decoration-none tablinks w-100`}>{row.name}</Link></p>
+    { name: 'ID', width: "10%", selector: row => row.id, sortable: true },
+    { name: 'Name', width: "70%", cell: row => (
+        <p className='mt-3'><Link to={`/project-detail/${row.id}`} className={`text-decoration-none tablinks w-100 d-flex align-items-center fw-semibold text-16`}>{row.name}</Link></p>
       ), sortable: true },
-    { name: 'Status', selector: row => row.status?row.status.charAt(0).toUpperCase() + row.status.slice(1):"", sortable: true }
+    { name: 'Status', width: "80%", selector: row => row.status?row.status.charAt(0).toUpperCase() + row.status.slice(1):"", sortable: true }
   ];
 
   useEffect(() => {
@@ -27,13 +87,19 @@ const Projects = () => {
   }, [dispatch]);  
 
   useEffect(() => {
-    setData(list.projects);
+    if(list?.projects!==undefined){
+      const projectList = list.projects.map(val=> {
+        const projStatus = val.status==='progress'?'In Progress':val.status
+        return {...val, status: projStatus}
+      });
+      setData(projectList);
+    }        
   }, [list]);  
 
   return (
     <>
       <div className='card-box width-75'>
-        <Tabbar />
+        <Tabbar pathname="/projects" />               
         {isAddPage ? (
           <Outlet />
         ) : (
@@ -42,16 +108,16 @@ const Projects = () => {
               <div className='tablinks'>
                   <span>All</span> |
                   <span>Draft</span> |
-                  <span>In Progress</span>
+                  <span>In Progress</span>                  
               </div>          
               <div className='tab-btn-end'>
                 <button className='grey-btn-md'>Suspended</button>
-                <button className='primary-btn-md'>Closed</button>
-                <Link className="blue-btn-md text-decoration-none text-center" to="/projects/add">New</Link>
+                <button className='primary-btn-md'>Closed</button>  
+                <Link className="blue-btn-md text-decoration-none text-center" to="/projects/add">New</Link>              
               </div>
             </div>
             <div className='pt-12'>
-              <ComponentTable columns={columns} data={data} />
+              <ComponentTable columns={columns} data={data} customStyles={customTableStyles} />
             </div>        
           </>
         )}        

@@ -1,9 +1,10 @@
 import React from 'react'
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const Tabbar = () => {
-  const location = useLocation();
-  const isActive = (path) => location.pathname.startsWith(path);
+const Tabbar = (props) => {
+  const isActive = (path) => {
+    return props.pathname?props.pathname.startsWith(path):false
+  };
 
   return (
     <>

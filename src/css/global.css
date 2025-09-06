@@ -3,10 +3,29 @@
   --white-color: #FFFFFF;
   --grey-color: #e7e7e78c;
   --grey-ligt-color: #ccc;
+  --grey-light-x: #eee;
   --grey-dark-color: #6a6767;
   --black-color: #0a0a0a;
   --red-color: #ff0000;
   --blue-color: #25c2ff;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-container {
+  flex: 1;
+  background-color: var(--grey-color);
+}
+
+.main-body{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 40px 200px;
 }
 
 .text-white{
@@ -104,6 +123,9 @@
 .bg-grey{
     background-color: var(--grey-ligt-color);
 }
+.bg-grey-x{
+    background-color: var(--grey-light-x);
+}
 
 .navbar-container{
     display: flex;
@@ -122,14 +144,6 @@
 .footer-container{
     background-color: var(--primary-color);
     padding: 16px 0px 75px;
-}
-
-.main-body{
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 40px 200px;
-    background-color: var(--grey-color);
 }
 
 .card-box{
@@ -239,7 +253,8 @@
 }
 .project-status-sec{
     border: 1px solid var(--grey-ligt-color);
-    display: flex;
+    display: flex;    
+    width: fit-content;
 }
 .status-btn{
     padding: 17px;
@@ -282,4 +297,10 @@
 .primary-heading{
     font-size: 18px;
     font-weight: 600;
+}
+.text-16{
+    font-size: 16px;
+}
+.cursor-pointer{
+    cursor: pointer;
 }

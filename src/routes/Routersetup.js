@@ -10,6 +10,9 @@ import Register from '../pages/Register';
 import ProtectedRoute from "./ProtectedRoute";
 import AddProject from '../pages/AddProject';
 import AddTask from '../pages/AddTask';
+import Taskdetails from '../pages/Taskdetails';
+import Profile from '../pages/Profile';
+import Dashboard from '../pages/Dashboard';
 
 const Routersetup = () => {
     
@@ -23,12 +26,17 @@ const Routersetup = () => {
                     <Route path='register' element={<Register />}></Route>
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>                  
+                        <Route path="profile" element={<Profile />} />
+                        <Route path="dashboard" element={<Dashboard />} />
                         <Route path="projects" element={<Projects />} >
                             <Route path="add" element={<AddProject />} />
                         </Route>                        
-                        <Route path="project-detail/:slug" element={<Projectdetails />} />
+                        <Route path="project-detail/:id" element={<Projectdetails />} >
+                            <Route path="add-task" element={<AddTask />} />
+                            <Route path="task/:taskId" element={<Taskdetails />} />
+                        </Route>
                         <Route path="tasks" element={<Tasks />} >
-                            <Route path="add" element={<AddTask />} />
+                            <Route path=":taskId" element={<Taskdetails />} />
                         </Route>
                         <Route path="updates" element={<Updates />} />                  
                     </Route>

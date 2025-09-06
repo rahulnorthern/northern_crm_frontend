@@ -11,6 +11,7 @@ const initialState = {
     title: "",
     description: "",
     deadline: "",
+    startDate: "",
     members: []
 }
 
@@ -50,8 +51,7 @@ const AddProject = () => {
     const submitForm = async (e) => {
         e.preventDefault();
         setValidated(true);   
-        console.log(formData)
-        console.log(selectedOptions);
+        
         if(formData.title && formData.description && formData.deadline && selectedOptions.length) {
             console.log(new Date(formData.deadline).toISOString().split("T")[0], new Date().toISOString().split("T")[0])
           if(new Date(formData.deadline).toISOString().split("T")[0] < new Date().toISOString().split("T")[0]){
@@ -110,6 +110,18 @@ const AddProject = () => {
                       />
                       {validated && !formData.description && <p className='text-danger'>Enter Description!!</p>}
                     </Form.Group>            
+                    <Form.Group className="mb-3" controlId="deadline.ControlInput">
+                      <Form.Label>Start Date*</Form.Label>
+                      <Form.Control
+                        type="date"
+                        name="startDate"
+                        value={formData.startDate}
+                        onChange={updateFormData}
+                      />
+                      {validated && !formData.startDate && (
+                        <p className="text-danger">Select Start Date!!</p>
+                      )}
+                    </Form.Group> 
                     <Form.Group className="mb-3" controlId="deadline.ControlInput">
                       <Form.Label>Deadline*</Form.Label>
                       <Form.Control
