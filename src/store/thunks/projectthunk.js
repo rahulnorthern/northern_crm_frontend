@@ -3,9 +3,9 @@ import { getProjectsApi } from "../../services/projectService";
 
 export const fetchProjects = createAsyncThunk(
   "project/fetchProjects",
-  async (_, { rejectWithValue }) => {
+  async (filter, { rejectWithValue }) => {
     try {
-      const data = await getProjectsApi();
+      const data = await getProjectsApi(filter);
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Login failed");

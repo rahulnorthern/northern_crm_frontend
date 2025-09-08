@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { getTaskApi } from '../services/taskServices';
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from "../store/slices/loaderSlice";
@@ -7,13 +7,14 @@ import { formatUtcToLocal } from '../services/globalService';
 import { History } from "lucide-react";
 
 const Taskdetails = () => {
+    const location = useLocation();
     const { id, taskId } = useParams();
     const dispatch = useDispatch();
     const [taskdetails, settaskdetails] = useState(undefined);
     const [files, setFiles] = useState([{ id: 1, file: null }]);
+    const taskPage = location.pathname.includes('tasks');
 
     useEffect(()=>{
-        console.log(id, taskId);
         dispatch(showLoader());
         const data = {
             projId: id,
@@ -23,7 +24,6 @@ const Taskdetails = () => {
         const getTaskDetails = ()=>{
             getTaskApi(data)
             .then((res) =>{
-                console.log(res);
                 settaskdetails(res.task);
             })
             .catch((err) =>{
@@ -55,7 +55,7 @@ const Taskdetails = () => {
         {taskdetails!==undefined && (<>
             <div className='d-flex justify-content-between align-items-center'>
                 <h5 className='color-primary text-capitalize'>{taskdetails.name}</h5>
-                <Link className="blue-btn-md text-decoration-none text-center" to={`/project-detail/${id}`}>Back To List</Link> 
+                <Link className="blue-btn-md text-decoration-none text-center" to={`${taskPage?'/tasks':`/project-detail/${id}`}`}>Back To List</Link> 
             </div>
             <p className='fw-normal'>
                 In {taskdetails.project.name}

@@ -7,8 +7,8 @@ export const createProjectApi = async (data) => {
 };
 
 // Get Projects
-export const getProjectsApi = async () => {
-  const res = await apiClient.get("/api/project/get");
+export const getProjectsApi = async (filter) => {
+  const res = await apiClient.get(`/api/project/get?status=${filter.filter}&page=${filter.currentPage}&rows=${filter.rowsPerPage}`);
   return res.data;
 };
 

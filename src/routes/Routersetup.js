@@ -36,7 +36,7 @@ const Routersetup = () => {
                             <Route path="task/:taskId" element={<Taskdetails />} />
                         </Route>
                         <Route path="tasks" element={<Tasks />} >
-                            <Route path=":taskId" element={<Taskdetails />} />
+                            <Route path=":id/:taskId" element={<Taskdetails />} />
                         </Route>
                         <Route path="updates" element={<Updates />} />                  
                     </Route>

@@ -48,13 +48,13 @@ const Info = () => {
             </li>
           </ul>
         </div> */}
-        <div className='card-box color-primary'>
+        {/* <div className='card-box color-primary'>
           <h2>Quick Links</h2>
           <ul>
             <li className='qk-link'>NSSPL – HR Portal</li>
             <li className='qk-link'>Submit Your Details</li>
           </ul>
-        </div>
+        </div> */}
       </div>      
     </>
   )

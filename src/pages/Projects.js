@@ -4,6 +4,7 @@ import Datatablecomponent from '../components/Datatablecomponent';
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProjects } from "../store/thunks/projectthunk";
+import { Form } from "react-bootstrap";
 
 const ComponentTable = Datatablecomponent(null);
 
@@ -11,8 +12,12 @@ const Projects = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const isAddPage = location.pathname.includes("/projects/add");
-  const { list } = useSelector((state) => state.project);
+  const { list, totalRows } = useSelector((state) => state.project);
   const [data, setData] = useState([]);
+  const [filter, setFilter] = useState('progress');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
 
   const customTableStyles = {
     table: {
@@ -83,18 +88,34 @@ const Projects = () => {
   ];
 
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch]);  
+    const filterOption = {
+      filter: filter,
+      currentPage,
+      rowsPerPage
+    }
+    dispatch(fetchProjects(filterOption));
+  }, [dispatch, filter, currentPage, rowsPerPage]);  
 
   useEffect(() => {
-    if(list?.projects!==undefined){
-      const projectList = list.projects.map(val=> {
-        const projStatus = val.status==='progress'?'In Progress':val.status
-        return {...val, status: projStatus}
-      });
-      setData(projectList);
-    }        
+    setTotalCount(totalRows);
+    const projectList = list.map(val=> {
+      const projStatus = val.status==='progress'?'In Progress':val.status
+      return {...val, status: projStatus}
+    });
+    setData(projectList);
   }, [list]);  
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (newPerPage, page) => {
+    setRowsPerPage(newPerPage);
+  };
 
   return (
     <>
@@ -105,19 +126,33 @@ const Projects = () => {
         ) : (
           <>
             <div className='tab-container pt-12 project-sec'>
-              <div className='tablinks'>
+              {/* <div className='tablinks'>
                   <span>All</span> |
                   <span>Draft</span> |
-                  <span>In Progress</span>                  
-              </div>          
+                  <span>In Progress</span>                       
+              </div>           */}
+              <div className='d-flex align-items-center col-4'>
+                <Form.Label className='me-2'>Filter:</Form.Label>
+                <Form.Select aria-label="Filter" value={filter} onChange={handleFilterChange}>
+                  <option value="">All</option>
+                  <option value="draft">Draft</option>
+                  <option value="progress">In Progress</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="closed">Closed</option>
+                </Form.Select>
+              </div>
               <div className='tab-btn-end'>
-                <button className='grey-btn-md'>Suspended</button>
-                <button className='primary-btn-md'>Closed</button>  
+                {/* <button className='grey-btn-md'>Suspended</button>
+                <button className='primary-btn-md'>Closed</button>   */}
                 <Link className="blue-btn-md text-decoration-none text-center" to="/projects/add">New</Link>              
               </div>
             </div>
             <div className='pt-12'>
-              <ComponentTable columns={columns} data={data} customStyles={customTableStyles} />
+              <ComponentTable columns={columns} data={data}
+               customStyles={customTableStyles}
+               onChangePage={handlePageChange} 
+               onChangeRowsPerPage={handleRowsPerPageChange}
+               paginationTotalRows={totalCount} />
             </div>        
           </>
         )}        
