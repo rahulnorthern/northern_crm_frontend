@@ -11,6 +11,7 @@ const Projectdetails = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { id } = useParams();
+  const [filter, setFilter] = useState('progress');
   const [projectDetails, setProjectDetails] = useState(undefined);
   const [taskscount, setTaskscount] = useState(0);
   const isSubPage = location.pathname.includes("task");
@@ -35,7 +36,7 @@ const Projectdetails = () => {
 
       getProjectDetails();
     }    
-  }, [isSubPage])
+  }, [isSubPage, filter])
 
   const formatUtcToLocal = (utcDateString)=> {
     const date = new Date(utcDateString);
@@ -57,6 +58,10 @@ const Projectdetails = () => {
     navigate(`/project-detail/${id}/task/${taskId}`);
   }
 
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+
   return (
     <>
       <div className='card-box width-75'>
@@ -75,14 +80,24 @@ const Projectdetails = () => {
               {projectDetails.description}
             </div>):null}
             <div className='tab-container pt-1 project-sec'>
-              <div className='tablinks'>
+              {/* <div className='tablinks'>
                   <span className='me-2'>All Tasks</span> |
                   <span className='mx-2'>Draft</span> |
                   <span className='mx-2'>In Progress</span>
-              </div>          
+              </div>           */}
+              <div className='d-flex align-items-center col-4'>
+                <Form.Label className='me-2'>Filter:</Form.Label>
+                <Form.Select aria-label="Filter" value={filter} onChange={handleFilterChange}>
+                  <option value="">All</option>
+                  <option value="draft">Draft</option>
+                  <option value="progress">In Progress</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="closed">Closed</option>
+                </Form.Select>
+              </div>
               <div className='tab-btn-end'>
-                <button className='grey-btn-md'>Suspended</button>
-                <button className='primary-btn-md'>Closed</button>
+                {/* <button className='grey-btn-md'>Suspended</button>
+                <button className='primary-btn-md'>Closed</button> */}
                 <Link className="blue-btn-md text-decoration-none text-center" to={`/project-detail/${projectDetails?.id}/add-task`}>New Task</Link>
               </div>
             </div>
@@ -106,9 +121,9 @@ const Projectdetails = () => {
                 <div className='list-card'>
                     <img src='/img/avatar.png' className='rounded-circle' />
                     <div>
-                        <p className='task-title mb-1 cursor-pointer' onClick={() => navigateTotask(task.id)}>{task.name}</p>
+                        <p className='task-title mb-1 cursor-pointer text-capitalize' onClick={() => navigateTotask(task.id)}>{task.name}</p>
                         <p className='task-detail mb-1'>{task.description}</p>
-                        <p className='task-detail mb-1'><span className='bg-red'>1</span> <span>Assigned To: {task.assignees.map((assignee, j)=> <>{j>0?', ':null}<span key={`assignee-${j}`}>{assignee.display_name}</span></>)}</span></p>
+                        <p className='task-detail mb-1'><span className={`${task.priority===1?'bg-red':(task.priority===2?'bg-yellow':'bg-green')}`}>{task.priority}</span> <span>Assigned To: {task.assignees.map((assignee, j)=> <React.Fragment key={`assignee-${j}`}>{j>0?', ':null}<span>{assignee.display_name}</span></React.Fragment>)}</span></p>
                         <p className='task-update mb-1'>{task.updatedAt===task.createdAt?`Add.: ${formatUtcToLocal(task.createdAt)} by ${task.createdBy.display_name}`:`Mod.: ${formatUtcToLocal(task.updatedAt)} by ${task.updatedBy.display_name}`}</p>
                     </div>
                     <div className='comment-sec' style={{ backgroundImage: "url('/img/comment-icon.png')" }} title="3 comments">

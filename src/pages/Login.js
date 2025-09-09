@@ -3,9 +3,10 @@ import { Form, InputGroup } from "react-bootstrap";
 import { Eye, EyeOff } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux';
 import { showLoader, hideLoader } from "../store/slices/loaderSlice";
-import { loginUser } from "../store/thunks/userThunks";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
+import { loginUser } from '../store/thunks/userThunks';
 
 const initialState = {
     username: "",
@@ -17,17 +18,16 @@ const Login = () => {
   const [validated, setValidated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const isLoggedin = useSelector((state) => state.auth.isLoggedIn);
-  const token = Cookies.get("accessToken");
-
+  
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(isLoggedin || token) {
+    if(isLoggedin) {
       navigate("/projects");
     }
-  }, [isLoggedin, token]);
+  }, [isLoggedin]);
 
   const updateFormData = (e) => {
       setFormData({
@@ -42,13 +42,23 @@ const Login = () => {
       
       if(formData.username && formData.password) {
         dispatch(showLoader());
-        try {
-          await dispatch(loginUser(formData)).unwrap();
-        } catch (err) {
-          console.error("Login failed:", err);
-        } finally {
-          dispatch(hideLoader());
-        }
+        await dispatch(loginUser(formData))
+          .unwrap()
+          .then(res=>{
+            Cookies.set("userDetails", JSON.stringify(res.user), { expires: 1 });
+          })
+          .catch(err=>{
+            console.log(err)
+            Swal.fire({
+                icon: "error",
+                title: "Login failed",
+                text: err?.message || 'Something went wrong!!',
+                confirmButtonColor: "#3085d6",
+            });
+          })
+          .finally(()=>{
+            dispatch(hideLoader());
+          });        
       }
   }
 

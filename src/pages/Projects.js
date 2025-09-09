@@ -15,9 +15,11 @@ const Projects = () => {
   const { list, totalRows } = useSelector((state) => state.project);
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState('progress');
+  const [myTask, setMyTask] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  const {role} = useSelector((state) => state.auth);
 
   const customTableStyles = {
     table: {
@@ -88,13 +90,20 @@ const Projects = () => {
   ];
 
   useEffect(() => {
-    const filterOption = {
-      filter: filter,
-      currentPage,
-      rowsPerPage
-    }
-    dispatch(fetchProjects(filterOption));
-  }, [dispatch, filter, currentPage, rowsPerPage]);  
+    if(role){
+      let filterOption = {
+        filter: filter,
+        currentPage,
+        rowsPerPage,      
+      }
+      
+      if(role==='admin'){
+        filterOption.myTask = myTask?true:false
+      }
+
+      dispatch(fetchProjects(filterOption));
+    }   
+  }, [dispatch, filter, myTask, currentPage, rowsPerPage, role]);  
 
   useEffect(() => {
     setTotalCount(totalRows);
@@ -107,6 +116,10 @@ const Projects = () => {
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
+  };
+
+  const handleMyTaskFilter = (event) => {
+    setMyTask(event.target.value);
   };
 
   const handlePageChange = (page) => {
@@ -131,15 +144,25 @@ const Projects = () => {
                   <span>Draft</span> |
                   <span>In Progress</span>                       
               </div>           */}
-              <div className='d-flex align-items-center col-4'>
-                <Form.Label className='me-2'>Filter:</Form.Label>
-                <Form.Select aria-label="Filter" value={filter} onChange={handleFilterChange}>
-                  <option value="">All</option>
-                  <option value="draft">Draft</option>
-                  <option value="progress">In Progress</option>
-                  <option value="suspended">Suspended</option>
-                  <option value="closed">Closed</option>
-                </Form.Select>
+              <div className='d-flex align-items-center col-8'>
+                <div>
+                  <Form.Label className='me-2'>Filter:</Form.Label>
+                </div>                
+                <div className='col-4 me-2'>
+                  <Form.Select aria-label="Filter" value={filter} onChange={handleFilterChange}>
+                    <option value="">All</option>
+                    <option value="draft">Draft</option>
+                    <option value="progress">In Progress</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="closed">Closed</option>
+                  </Form.Select>                
+                </div>  
+                {role==='admin' && <div className='col-3'>
+                  <Form.Select aria-label="Filter" value={myTask} onChange={handleMyTaskFilter}>
+                    <option value="">All</option>
+                    <option value="my">My Projects</option>
+                  </Form.Select>   
+                </div>}          
               </div>
               <div className='tab-btn-end'>
                 {/* <button className='grey-btn-md'>Suspended</button>

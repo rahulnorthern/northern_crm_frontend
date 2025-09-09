@@ -7,8 +7,8 @@ import Cookies from "js-cookie";
 const Info = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isLoggedin = useSelector((state) => state.auth.isLoggedIn) || Cookies.get("accessToken");
-
+  const {isLoggedIn, user, role} = useSelector((state) => state.auth);
+  
   const handleLogout = () => {
     Cookies.remove("accessToken");
     dispatch(logout());
@@ -18,20 +18,20 @@ const Info = () => {
   return (
     <>
       <div className='width-25'>
-        <div className='card-box color-primary'>
+        {isLoggedIn && <div className='card-box color-primary'>
           <h2>Welcome</h2>
           <div className='d-flex'>
             <div>
               <img src='/img/avatar.png' className='rounded-circle me-3' alt='avatar' />
             </div>            
             <ul>
-              <li className='qk-link cursor-pointer'>Role</li>
+              <li className='text-capitalize fs-5 color-black mb-2'>{user} ({role})</li>
               <li className='qk-link cursor-pointer'><Link className="color-primary text-decoration-none text-center" to="/dashboard">Dashboard</Link></li>
               <li className='qk-link cursor-pointer'><Link className="color-primary text-decoration-none text-center" to="/profile">Edit Profile</Link></li>
               <li className='qk-link cursor-pointer' onClick={handleLogout}>Logout</li>
             </ul>
           </div>          
-        </div>
+        </div>}
         {/* <div className='card-box color-primary'>
           <h2>Upcoming Events</h2>
           <ul>

@@ -16,6 +16,11 @@ const authSlice = createSlice({
       state.user = null;
       state.isLoggedIn = false;
       state.role = null;
+    },
+    login: (state, action) => {
+      state.user = action?.payload?.display_name;
+      state.isLoggedIn = true;
+      state.role = action?.payload?.role;
     }
   },
   extraReducers: (builder) => {
@@ -25,7 +30,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action?.payload?.user;
+        state.user = action?.payload?.user?.display_name;
         state.isLoggedIn = true;
         state.role = action?.payload?.user?.role;
       })
@@ -35,5 +40,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, login, setAuthChecked } = authSlice.actions;
 export default authSlice.reducer;

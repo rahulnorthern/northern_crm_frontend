@@ -8,7 +8,11 @@ export const createProjectApi = async (data) => {
 
 // Get Projects
 export const getProjectsApi = async (filter) => {
-  const res = await apiClient.get(`/api/project/get?status=${filter.filter}&page=${filter.currentPage}&rows=${filter.rowsPerPage}`);
+  let myTaskFilter = false;
+  if(filter?.myTask===true || filter?.myTask===false){
+    myTaskFilter = true;
+  }
+  const res = await apiClient.get(`/api/project/get?status=${filter.filter}&page=${filter.currentPage}&rows=${filter.rowsPerPage}${myTaskFilter?`&myTask=${filter.myTask}`:''}`);
   return res.data;
 };
 
