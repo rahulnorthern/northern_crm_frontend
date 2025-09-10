@@ -30,6 +30,10 @@
     padding: 40px 200px;
 }
 
+.bg-clr-primary{
+    background-color: var(--primary-color)!important;
+}
+
 .text-white{
     color: var(--white-color)
 }
@@ -320,4 +324,22 @@
 }
 .cursor-pointer{
     cursor: pointer;
+}
+
+.ProseMirror {
+  outline: none;
+  min-height: 100px;
+}
+
+.ProseMirror:focus {
+  outline: none;
+  box-shadow: none;
+}
+.css-13cymwt-control{
+    border: 1px solid #dee2e6!important;
+    border-radius: 6px!important;
+}
+.css-1jqq78o-placeholder{
+    font-weight: 400!important;
+    color: #808080!important;
 }

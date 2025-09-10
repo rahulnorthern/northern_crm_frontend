@@ -14,17 +14,29 @@ const Projectdetails = () => {
   const [filter, setFilter] = useState('progress');
   const [projectDetails, setProjectDetails] = useState(undefined);
   const [taskscount, setTaskscount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [pagesArr, setPagesArr] = useState([]);
   const isSubPage = location.pathname.includes("task");
   const navigate = useNavigate();
 
   useEffect(()=>{
     if(!location.pathname.includes("task")){
       dispatch(showLoader());
+
       const getProjectDetails = ()=>{
-        getProjectApi(id)
+        let filterOption = {
+          filter,
+          currentPage,
+          rowsPerPage,      
+        }
+        getProjectApi(id, filterOption)
         .then((res) =>{
           setProjectDetails(res.project);
           setTaskscount(res.totalTasks);
+          const totalPages = Math.ceil(res.totalTasks/rowsPerPage);
+          const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+          setPagesArr(pages);
         })
         .catch((err) =>{
           console.log(err);
@@ -36,7 +48,7 @@ const Projectdetails = () => {
 
       getProjectDetails();
     }    
-  }, [isSubPage, filter])
+  }, [isSubPage, filter, currentPage, rowsPerPage])
 
   const formatUtcToLocal = (utcDateString)=> {
     const date = new Date(utcDateString);
@@ -61,6 +73,18 @@ const Projectdetails = () => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
+
+  const handlePageChange = (pageNo) => {
+    setCurrentPage(pageNo);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(e.target.value);
+  };
+
+  const getPageNoStyle = (pageNo)=>{
+    return currentPage===pageNo?'bg-clr-primary text-white':'color-primary'    
+  }
 
   return (
     <>
@@ -144,17 +168,18 @@ const Projectdetails = () => {
               </div>))}
               <div className='d-flex justify-content-between align-items-center pt-4'>
                 <div>
-                    <span>Page: </span><span>1</span>
+                    <span>Page: </span>
+                    {pagesArr.length && pagesArr.map((pageNo, i)=> <span key={`page-${i}`} className={`px-1 me-2 cursor-pointer ${getPageNoStyle(pageNo)}`} onClick={()=>handlePageChange(pageNo)}>{pageNo}</span>)}
                 </div>
                 <div className='d-flex justify-content-end align-items-center width-40'>
                     <span className='px-4'>Results per page: </span>
                     <div className='width-80px'>
-                        <Form.Select aria-label="Default select example">
-                          <option>5</option>
-                          <option value="1">10</option>
-                          <option value="2">20</option>
-                          <option value="3">50</option>
-                          <option value="1">100</option>
+                        <Form.Select aria-label="Default select example" value={rowsPerPage} onChange={handleRowsPerPageChange}>
+                          <option value="5">5</option>
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
                         </Form.Select>
                     </div>                
                 </div>

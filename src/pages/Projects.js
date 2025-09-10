@@ -15,7 +15,7 @@ const Projects = () => {
   const { list, totalRows } = useSelector((state) => state.project);
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState('progress');
-  const [myTask, setMyTask] = useState('');
+  const [myProj, setMyProj] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
@@ -98,12 +98,12 @@ const Projects = () => {
       }
       
       if(role==='admin'){
-        filterOption.myTask = myTask?true:false
+        filterOption.myProj = myProj?true:false
       }
 
       dispatch(fetchProjects(filterOption));
     }   
-  }, [dispatch, filter, myTask, currentPage, rowsPerPage, role]);  
+  }, [dispatch, filter, myProj, currentPage, rowsPerPage, role]);  
 
   useEffect(() => {
     setTotalCount(totalRows);
@@ -118,15 +118,15 @@ const Projects = () => {
     setFilter(event.target.value);
   };
 
-  const handleMyTaskFilter = (event) => {
-    setMyTask(event.target.value);
+  const handleMyProjFilter = (event) => {
+    setMyProj(event.target.value);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleRowsPerPageChange = (newPerPage, page) => {
+  const handleRowsPerPageChange = (newPerPage) => {
     setRowsPerPage(newPerPage);
   };
 
@@ -158,7 +158,7 @@ const Projects = () => {
                   </Form.Select>                
                 </div>  
                 {role==='admin' && <div className='col-3'>
-                  <Form.Select aria-label="Filter" value={myTask} onChange={handleMyTaskFilter}>
+                  <Form.Select aria-label="Filter" value={myProj} onChange={handleMyProjFilter}>
                     <option value="">All</option>
                     <option value="my">My Projects</option>
                   </Form.Select>   

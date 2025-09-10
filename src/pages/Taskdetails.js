@@ -5,6 +5,11 @@ import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from "../store/slices/loaderSlice";
 import { formatUtcToLocal } from '../services/globalService';
 import { History } from "lucide-react";
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Strike from '@tiptap/extension-strike';
+import Code from '@tiptap/extension-code';
 
 const Taskdetails = () => {
     const location = useLocation();
@@ -13,6 +18,17 @@ const Taskdetails = () => {
     const [taskdetails, settaskdetails] = useState(undefined);
     const [files, setFiles] = useState([{ id: 1, file: null }]);
     const taskPage = location.pathname.includes('tasks');
+    const [headingLevel, setHeadingLevel] = useState('');
+    
+    const editor = useEditor({
+      extensions: [StarterKit, Underline, Strike, Code],
+      content: '<p>Start typing here...</p>',
+    });
+
+    const handleHeadingChange = (level) => {
+      setHeadingLevel(level);
+      editor.chain().focus().toggleHeading({ level }).run();
+    };
 
     useEffect(()=>{
         dispatch(showLoader());
@@ -114,9 +130,7 @@ const Taskdetails = () => {
                {
                 taskdetails.comments.length?(taskdetails.comments.map((comment, i)=>(
                     <>
-                        <div key={`comment-${i}`}>
-
-                        </div>
+                        <div key={`comment-${i}`}></div>
                     </>
                 ))):null
                }
@@ -125,7 +139,23 @@ const Taskdetails = () => {
                 Add a Comment:
             </p>
             <div>
-                <textarea className='col-12' />
+                <div className="flex flex-wrap gap-2 items-center">
+                  <select value={headingLevel} onChange={(e) => handleHeadingChange(Number(e.target.value))} className="px-3 py-1 border rounded">
+                    <option value="">Normal</option>
+                    <option value={1}>H1</option>
+                    <option value={2}>H2</option>
+                  </select>
+                  <button onClick={() => editor.chain().focus().toggleBold().run()} className="px-3 py-1 border rounded">B</button>
+                  <button onClick={() => editor.chain().focus().toggleItalic().run()} className="px-3 py-1 border rounded">I</button>
+                  <button onClick={() => editor.chain().focus().toggleUnderline().run()} className="px-3 py-1 border rounded">U</button>
+                  <button onClick={() => editor.chain().focus().toggleStrike().run()} className="px-3 py-1 border rounded">S</button>
+                  <button onClick={() => editor.chain().focus().toggleBulletList().run()} className="px-3 py-1 border rounded">• List</button>
+                  <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className="px-3 py-1 border rounded">1. List</button>
+                  <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className="px-3 py-1 border rounded">❝ Blockquote</button>
+                  <button onClick={() => editor.chain().focus().setHorizontalRule().run()} className="px-3 py-1 border rounded">― Horizontal Rule</button>
+                  <button onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} className="px-3 py-1 border rounded">Clear Formatting</button>
+                </div>
+                <EditorContent editor={editor} style={{ border: '1px solid #ccc', borderRadius: '12px', minHeight: '100px', padding: '10px' }} />
             </div>
             <div className='mt-3 d-flex'>
                 <label className='me-2'>Add a File:</label>

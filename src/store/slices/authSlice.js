@@ -32,7 +32,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action?.payload?.user?.display_name;
         state.isLoggedIn = true;
-        state.role = action?.payload?.user?.role;
+        state.role = action?.payload?.user?.user_role;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;

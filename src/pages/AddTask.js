@@ -151,7 +151,7 @@ const AddTask = () => {
                         <p className="text-danger">Select Deadline!!</p>
                       )}
                     </Form.Group> 
-                    <div className="mb-3">
+                    <div className="mb-4">
                       <Form.Label>Assignees*</Form.Label>
                       <Select
                         isMulti
