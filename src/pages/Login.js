@@ -4,7 +4,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { useDispatch, useSelector } from 'react-redux';
 import { showLoader, hideLoader } from "../store/slices/loaderSlice";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import Swal from "sweetalert2";
 import { loginUser } from '../store/thunks/userThunks';
 
@@ -45,7 +44,7 @@ const Login = () => {
         await dispatch(loginUser(formData))
           .unwrap()
           .then(res=>{
-            Cookies.set("userDetails", JSON.stringify(res.user), { expires: 1 });
+            
           })
           .catch(err=>{
             console.log(err)

@@ -3,6 +3,7 @@ import { logout } from '../store/slices/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const Info = () => {
   const dispatch = useDispatch();

@@ -6,6 +6,8 @@ import { Link, Outlet, useParams, useLocation, useNavigate } from 'react-router-
 import { getProjectApi } from '../services/projectService';
 import { useDispatch } from 'react-redux';
 import { showLoader, hideLoader } from "../store/slices/loaderSlice";
+import Swal from "sweetalert2";
+import { updateTaskApi } from '../services/taskServices';
 
 const Projectdetails = () => {
   const dispatch = useDispatch();
@@ -17,6 +19,7 @@ const Projectdetails = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [pagesArr, setPagesArr] = useState([]);
+  const [updateTaskCalled, setUpdateTaskCalled] = useState(false);
   const isSubPage = location.pathname.includes("task");
   const navigate = useNavigate();
 
@@ -24,31 +27,45 @@ const Projectdetails = () => {
     if(!location.pathname.includes("task")){
       dispatch(showLoader());
 
-      const getProjectDetails = ()=>{
-        let filterOption = {
-          filter,
-          currentPage,
-          rowsPerPage,      
-        }
-        getProjectApi(id, filterOption)
-        .then((res) =>{
-          setProjectDetails(res.project);
-          setTaskscount(res.totalTasks);
-          const totalPages = Math.ceil(res.totalTasks/rowsPerPage);
-          const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-          setPagesArr(pages);
-        })
-        .catch((err) =>{
-          console.log(err);
-        })
-        .finally(()=>{
-          dispatch(hideLoader());
-        })
+      const getProjectDetails = async ()=>{
+        await fetchProjectDetails();
       }
 
       getProjectDetails();
     }    
   }, [isSubPage, filter, currentPage, rowsPerPage])
+
+  useEffect(()=>{
+    if(updateTaskCalled){
+      const callProjDetails = async ()=>{
+        await fetchProjectDetails();
+        setUpdateTaskCalled(false);
+      }
+      callProjDetails();
+    }
+  }, [updateTaskCalled])
+
+  const fetchProjectDetails = async ()=>{
+    let filterOption = {
+      filter,
+      currentPage,
+      rowsPerPage,      
+    }
+    await getProjectApi(id, filterOption)
+    .then((res) =>{
+      setProjectDetails(res.project);
+      setTaskscount(res.totalTasks);
+      const totalPages = Math.ceil(res.totalTasks/rowsPerPage);
+      const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+      setPagesArr(pages);
+    })
+    .catch((err) =>{
+      console.log(err);          
+    })
+    .finally(()=>{
+      dispatch(hideLoader());
+    })
+  }
 
   const formatUtcToLocal = (utcDateString)=> {
     const date = new Date(utcDateString);
@@ -84,6 +101,33 @@ const Projectdetails = () => {
 
   const getPageNoStyle = (pageNo)=>{
     return currentPage===pageNo?'bg-clr-primary text-white':'color-primary'    
+  }
+
+  const updateTaskStatus = async (id, status, crrStatus) => {
+    if(status.toLowerCase()!==crrStatus.toLowerCase()){
+      dispatch(showLoader());
+      await updateTaskApi(id, {status})
+      .then(res=>{
+        setUpdateTaskCalled(true);
+        Swal.fire({
+          icon: "success",
+          title: "Task Status",
+          text: res?.message,
+          confirmButtonColor: "#3085d6",
+        });
+      })
+      .catch(err=>{
+        Swal.fire({
+          icon: "error",
+          title: "Task Status",
+          text: err?.message || 'Something went wrong!!',
+          confirmButtonColor: "#3085d6",
+        });
+      })
+      .finally(()=>{
+        dispatch(hideLoader());
+      })
+    }
   }
 
   return (
@@ -156,11 +200,11 @@ const Projectdetails = () => {
                     <div className='d-flex flex-column justify-content-center align-items-center'>
                         <p>—</p>
                         <div className='project-status-sec'>
-                            <button className={`status-btn ${'bg-grey'}`}></button>
+                            <button className={`status-btn ${'bg-grey'}`} title="Click to mark as In Progress" onClick={()=> updateTaskStatus(task.id, 'progress', task.status)}></button>
                             <div className='center-status'>
-                                <button className={`status-btn ${task.status==='suspended'||task.status==='closed'?'bg-grey':'bg-white'}`}></button>
+                                <button className={`status-btn ${task.status==='suspended'||task.status==='closed'?'bg-grey':'bg-white'}`}  title="Click to mark as Suspended" onClick={()=> updateTaskStatus(task.id, 'suspended', task.status)}></button>
                             </div>                        
-                            <button className={`status-btn ${task.status==='closed'?'bg-grey':'bg-white'}`}></button>
+                            <button className={`status-btn ${task.status==='closed'?'bg-grey':'bg-white'}`} title="Click to mark as Closed" onClick={()=> updateTaskStatus(task.id, 'closed', task.status)}></button>
                         </div>
                         <div>{task.status==='progress'?'In Progress':task.status.charAt(0).toUpperCase() + task.status.slice(1)}</div>
                     </div>

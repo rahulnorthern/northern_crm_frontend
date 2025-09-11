@@ -40,6 +40,9 @@
 .pt-12{
     padding-top: 12px;
 }
+.text-12{
+    font-size: 12px;
+}
 .font-700{
     font-weight: 700;
 }
@@ -342,4 +345,11 @@
 .css-1jqq78o-placeholder{
     font-weight: 400!important;
     color: #808080!important;
+}
+.height-35{
+    height: 35px;
+}
+.ProseMirror {
+  line-height: 0.6;
+  padding: 12px;
 }
